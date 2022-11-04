@@ -177,7 +177,7 @@ void watchRacketBounce() {
 public void mousePressed() {
     // if the initial screen is active, start game on click
     if (gameScreen == 0) {
-      if (mouseX < 200 || mouseX > 300 || mouseY < 220 || mouseY > 220) return;
+      if (mouseX < 200 || mouseX > 300 || mouseY < 220 || mouseY > 270) return;
         startGame();
     }
 }

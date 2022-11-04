@@ -12,14 +12,15 @@ int ballSize = 20;
 int ballColor = color(0);
 
 // gravity
-float gravity = 1;
+float gravity = 0.1;
 float ballSpeedVert = 0;
-float ballSpeedHorz = 10;
+float ballSpeedHorz = 0;
 float airfriction = 0.0001;
 float friction = 0.1;
 
 
 // racket
+float racketX, racketY;
 color racketColor = color(0);
 float racketWidth = 100;
 float racketHeight = 10;
@@ -53,21 +54,26 @@ void draw() {
 /*************** SCREEN CONTENTS ***************/
 
 void initScreen() {
-    background(0);
-    textAlign(CENTER);
-    text("Click to start", height/2, width/2);
+  background(0);
+  fill(50);
+  rect(200, 220, 100, 50, 5);
+  fill(255);
+  textAlign(CENTER);
+  text("Start", height/2, width/2);
 }
 
 void gameScreen() {
-    background(255);
+  background(255);
+  stroke(200);
+  line(0, 400, 500, 400);
     
-    drawBall();
-    drawRacket();
-    watchRacketBounce();
+  drawBall();
+  drawRacket();
+  watchRacketBounce();
     
-    applyGravity();
-    applyHorizontalSpeed();
-    keepInScreen();
+  applyGravity();
+  applyHorizontalSpeed();
+  keepInScreen();
 }
 
 void gameOverScreen() {
@@ -145,18 +151,21 @@ void keepInScreen() {
 void drawRacket() {
   fill(racketColor);
   rectMode(CENTER);
-  rect(mouseX, mouseY, racketWidth, racketHeight);
+  racketY = max(400, mouseY);
+  racketX = mouseX;
+  rect(racketX, racketY, racketWidth, racketHeight);
 }
 
 void watchRacketBounce() {
-  float overhead = mouseY - pmouseY;
-  if ((ballX + (ballSize/2) > mouseX - (racketWidth/2)) && (ballX - (ballSize/2) < mouseX + (racketWidth/2))) {
-    if (dist(ballX, ballY, ballX, mouseY) <= (ballSize/2) + abs(overhead)) {
-      makeBounceBottom(mouseY);
+  float overhead = racketY - pmouseY;
+  if ((ballX + (ballSize/2) > racketX - (racketWidth/2)) && (ballX - (ballSize/2) < mouseX + (racketWidth/2))) {
+    if (dist(ballX, ballY, ballX, racketY) <= (ballSize/2) + abs(overhead)) {
+      makeBounceBottom(racketY);
       // racket moving up
       if (overhead < 0) {
         ballY += overhead;
         ballSpeedVert += overhead;
+        ballSpeedHorz = (ballX - racketX)/5;
       }
     }
   }
@@ -168,6 +177,7 @@ void watchRacketBounce() {
 public void mousePressed() {
     // if the initial screen is active, start game on click
     if (gameScreen == 0) {
+      if (mouseX < 200 || mouseX > 300 || mouseY < 220 || mouseY > 220) return;
         startGame();
     }
 }

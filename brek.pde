@@ -11,6 +11,7 @@ int score;
 
 // timer
 float timeRoundStarted;
+float timePlayed;
 
 // ball
 float ballX, ballY;
@@ -73,9 +74,10 @@ void initScreen() {
   fill(50);
   rectMode(CENTER);
   stroke(0);
-  rect(250, 245, 100, 50, 5);
+  rect(250, 243, 100, 50, 5);
   fill(255);
   textAlign(CENTER);
+  textSize(20);
   text("Start", height/2, width/2);
 }
 
@@ -95,16 +97,39 @@ void gameScreen() {
   // objects
   objectAdder();
   objectHandler();
-  
+
   // timer
   drawTimer();
-  
+
   // score
   drawScore();
 }
 
 void gameOverScreen() {
   background(0);
+  textAlign(CENTER);
+
+  // score label
+  stroke(100);
+  fill(100);
+  textSize(20);
+  text("Score", width/2, height/2 - 80);
+  // score number
+  stroke(255);
+  fill(255);
+  textSize(100);
+  text(score, width/2, height/2);
+  
+  // time label
+  stroke(100);
+  fill(100);
+  textSize(15);
+  text("Time played", width/2, height/2 + 50);
+  // time number
+  stroke(200);
+  fill(200);
+  textSize(35);
+  text(formatTime(timePlayed), width/2, height/2 + 80);
 }
 
 /*************** SCREEN OBJECTS ***************/
@@ -189,20 +214,19 @@ void objectHandler() {
     if (objectRemover(i)) {
       return;
     }
-    
+
     objectMover(i);
     objectDrawer(i);
     watchObjectCollision(i);
-    
   }
 }
 
 void watchObjectCollision(int index) {
   int[] object = objects.get(index);
-  
+
   int objectX = object[0];
   int objectY = object[1];
-  
+
   // ball in object
   if (
     (ballX + (ballSize/2) > objectX - objectWidth/2) &&
@@ -210,9 +234,9 @@ void watchObjectCollision(int index) {
     (ballY + (ballSize/2) > objectY - objectHeight/2) &&
     (ballY - (ballSize/2) < objectY - objectHeight/2 + objectHeight)
     ) {
-      if (object[4] == 1) score++;
-      objects.remove(index);
-   }
+    if (object[4] == 1) score++;
+    objects.remove(index);
+  }
 }
 
 void objectDrawer(int index) {
@@ -223,7 +247,7 @@ void objectDrawer(int index) {
   } else {
     stroke(defaultObjectColor);
     fill(defaultObjectColor);
-  } 
+  }
   rect(object[0], object[1], object[2], object[3]);
 }
 
@@ -300,10 +324,10 @@ void startGame() {
 
   // objects
   objects = new ArrayList<int[]>();
-  
+
   // time
   timeRoundStarted = millis();
-  
+
   // score
   score = 0;
 }
@@ -324,22 +348,22 @@ void drawScore() {
 /*** TIMER ***/
 
 void drawTimer() {
-  float time = (millis()-timeRoundStarted)/1000;
-  
+  timePlayed = (millis()-timeRoundStarted)/1000;
+
   stroke(0);
   fill(0);
   textAlign(LEFT, TOP);
-  text(formatTime(time), 10, 10);
+  text(formatTime(timePlayed), 10, 10);
 }
 
 String formatTime(float timeInSecs) {
   int minutes = floor(timeInSecs / 60);
   float seconds = timeInSecs - minutes * 60;
-  
+
   String formattedMinutes = "";
   if (minutes < 10) formattedMinutes = "0";
   formattedMinutes = formattedMinutes + minutes;
-  
+
   String formattedSeconds = "";
   if (seconds < 10) formattedSeconds = "0";
   formattedSeconds = formattedSeconds + seconds;

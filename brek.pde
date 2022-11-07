@@ -20,7 +20,7 @@ float friction = 0.1;
 
 
 // racket
-float racketX, racketY;
+float racketX, racketY, pracketY;
 color racketColor = color(0);
 float racketWidth = 100;
 float racketHeight = 10;
@@ -151,16 +151,17 @@ void keepInScreen() {
 void drawRacket() {
   fill(racketColor);
   rectMode(CENTER);
-  racketY = max(400, mouseY);
-  racketX = mouseX;
+  racketY = min(500, max(400, mouseY));
+  racketX = min(500 - racketWidth/2, max(0 + racketWidth/2, mouseX));
   rect(racketX, racketY, racketWidth, racketHeight);
 }
 
 void watchRacketBounce() {
-  float overhead = racketY - pmouseY;
-  if ((ballX + (ballSize/2) > racketX - (racketWidth/2)) && (ballX - (ballSize/2) < mouseX + (racketWidth/2))) {
-    if (dist(ballX, ballY, ballX, racketY) <= (ballSize/2) + abs(overhead)) {
-      makeBounceBottom(racketY);
+  float overhead = racketY - pracketY;
+  pracketY = racketY;
+  if ((ballX + (ballSize/2) > racketX - (racketWidth/2)) && (ballX - (ballSize/2) < racketX + (racketWidth/2))) {
+    if (dist(ballX, ballY, ballX, racketY - racketHeight/2) <= (ballSize/2) + abs(overhead)) {
+      makeBounceBottom(racketY - racketHeight/2);
       // racket moving up
       if (overhead < 0) {
         ballY += overhead;

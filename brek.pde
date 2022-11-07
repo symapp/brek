@@ -119,7 +119,7 @@ void gameOverScreen() {
   fill(255);
   textSize(100);
   text(score, width/2, height/2);
-  
+
   // time label
   stroke(100);
   fill(100);
@@ -129,7 +129,16 @@ void gameOverScreen() {
   stroke(200);
   fill(200);
   textSize(35);
-  text(formatTime(timePlayed), width/2, height/2 + 80);
+  text(formatTime(timePlayed), width/2, height/2 + 85);
+
+  // PLAY AGAIN BUTTON
+  stroke(0);
+  fill(50);
+  rect(250, 400, 110, 50, 5);
+  fill(255);
+  textAlign(CENTER);
+  textSize(20);
+  text("Play Again", height/2, width/2 + 155);
 }
 
 /*************** SCREEN OBJECTS ***************/
@@ -302,7 +311,8 @@ public void mousePressed() {
     if (mouseX < 200 || mouseX > 300 || mouseY < 220 || mouseY > 270) return;
     startGame();
   } else if (gameScreen == 2) {
-    gameScreen = 0;
+    if (mouseX < 145 || mouseX > 355 || mouseY < 375 || mouseY > 425) return;
+    startGame();
   }
 }
 

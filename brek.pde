@@ -18,7 +18,6 @@ float ballSpeedHorz = 0;
 float airfriction = 0.0001;
 float friction = 0.1;
 
-
 // racket
 float racketX, racketY, pracketY;
 color racketColor = color(170, 75, 0);
@@ -26,24 +25,33 @@ float racketWidth = 100;
 float racketHeight = 10;
 int racketBounceRate = 20;
 
+// objects
+int objectSpeed = 1;
+int objectInterval = 5000;
+float lastAddTime = 0;
+int objectHeight = 15;
+int objectWidth = 50;
+color objectColor = color(0);
+ArrayList<int[]> objects = new ArrayList<int[]>();
+
 /*************** SETUP BLOCK ***************/
 
 void setup() {
-    size(500, 500);
+  size(500, 500);
 }
 
 
 /*************** DRAW BLOCK ***************/
 
 void draw() {
-    // Display the contents of the current screen
-    if (gameScreen == 0) {
-        initScreen();
-    } else if (gameScreen == 1) {
-        gameScreen();
-    } else if (gameScreen == 2) {
-        gameOverScreen();
-    }
+  // Display the contents of the current screen
+  if (gameScreen == 0) {
+    initScreen();
+  } else if (gameScreen == 1) {
+    gameScreen();
+  } else if (gameScreen == 2) {
+    gameOverScreen();
+  }
 }
 
 
@@ -64,14 +72,18 @@ void gameScreen() {
   background(255);
   stroke(200);
   line(0, 400, 500, 400);
-    
+
   drawBall();
   drawRacket();
   watchRacketBounce();
-    
+
   applyGravity();
   applyHorizontalSpeed();
   keepInScreen();
+
+  // objects
+  objectAdder();
+  objectHandler();
 }
 
 void gameOverScreen() {
@@ -144,6 +156,77 @@ void keepInScreen() {
 }
 
 
+/*** OBJECTS ***/
+
+void objectAdder() {
+  if (millis()-lastAddTime > objectInterval) {
+    int randX = round(random(0, width - objectWidth) + objectWidth/2);
+    int[] randObject = {randX, -objectHeight, objectWidth, objectHeight};
+    objects.add(randObject);
+    lastAddTime = millis();
+  }
+}
+
+void objectHandler() {
+  for (int i = 0; i < objects.size(); i++) {
+    if (objectRemover(i)) {
+      return;
+    }
+    
+    objectMover(i);
+    objectDrawer(i);
+    watchObjectCollision(i);
+    
+  }
+}
+
+void watchObjectCollision(int index) {
+  int[] object = objects.get(index);
+  
+  int objectX = object[0];
+  int objectY = object[1];
+  int objectTop = object[1] - objectHeight/2;
+  int objectBottom = object[1] + objectHeight/2;
+  int objectLeft = object[0] - objectWidth/2;
+  int objectRight = object[0] + objectWidth/2;
+  
+  float ballTop = ballY - ballSize/2;
+  float ballBottom = ballY + ballSize/2;
+  float ballLeft = ballX - ballSize/2;
+  float ballRight = ballX + ballSize/2;
+  
+  // ball in object
+  if (
+    (ballX + (ballSize/2) > objectX - objectWidth/2) &&
+    (ballX - (ballSize/2) < objectX - objectWidth/2 + objectWidth) &&
+    (ballY + (ballSize/2) > objectY - objectHeight/2) &&
+    (ballY - (ballSize/2) < objectY - objectHeight/2 + objectHeight)
+    ) {
+      objects.remove(index);
+   }
+}
+
+void objectDrawer(int index) {
+  int[] object = objects.get(index);
+  stroke(objectColor);
+  fill(objectColor);
+  rect(object[0], object[1], object[2], object[3]);
+}
+
+void objectMover(int index) {
+  int[] object = objects.get(index);
+  object[1] += objectSpeed;
+}
+
+boolean objectRemover(int index) {
+  int[] object = objects.get(index);
+  if (object[1] - object[3]  >= height) {
+    objects.remove(index);
+    return true;
+  }
+  return false;
+}
+
 
 /*** RACKET ***/
 
@@ -179,7 +262,7 @@ public void mousePressed() {
   // if the initial screen is active, start game on click
   if (gameScreen == 0) {
     if (mouseX < 200 || mouseX > 300 || mouseY < 220 || mouseY > 270) return;
-      startGame();
+    startGame();
   } else if (gameScreen == 2) {
     gameScreen = 0;
   }
@@ -193,13 +276,16 @@ void startGame() {
   // gravity
   ballSpeedVert = 0;
   ballSpeedHorz = 0;
-  
+
   // ball
   ballX = width/4;
   ballY = height/5;
-  
+
   // screen
   gameScreen = 1;
+
+  // objects
+  objects = new ArrayList<int[]>();
 }
 
 // This method sets the necessary variables to end the round

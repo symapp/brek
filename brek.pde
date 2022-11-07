@@ -6,6 +6,9 @@
 // 2: GameOver Screen
 int gameScreen = 0;
 
+// color
+int score;
+
 // timer
 float timeRoundStarted;
 
@@ -34,7 +37,12 @@ int objectInterval = 5000;
 float lastAddTime = 0;
 int objectHeight = 15;
 int objectWidth = 50;
-color objectColor = color(0);
+color defaultObjectColor = color(0);
+color coinObjectColor = color(255, 255, 0);
+// {x, y, height, width, type}
+// types:
+// 0 = nothing
+// 1 = yellow, coins
 ArrayList<int[]> objects = new ArrayList<int[]>();
 
 /*************** SETUP BLOCK ***************/
@@ -89,8 +97,10 @@ void gameScreen() {
   objectHandler();
   
   // timer
-  updateTimer();
   drawTimer();
+  
+  // score
+  drawScore();
 }
 
 void gameOverScreen() {
@@ -168,7 +178,7 @@ void keepInScreen() {
 void objectAdder() {
   if (millis()-lastAddTime > objectInterval) {
     int randX = round(random(0, width - objectWidth) + objectWidth/2);
-    int[] randObject = {randX, -objectHeight, objectWidth, objectHeight};
+    int[] randObject = {randX, -objectHeight, objectWidth, objectHeight, round(random(0, 1))};
     objects.add(randObject);
     lastAddTime = millis();
   }
@@ -200,14 +210,20 @@ void watchObjectCollision(int index) {
     (ballY + (ballSize/2) > objectY - objectHeight/2) &&
     (ballY - (ballSize/2) < objectY - objectHeight/2 + objectHeight)
     ) {
+      if (object[4] == 1) score++;
       objects.remove(index);
    }
 }
 
 void objectDrawer(int index) {
   int[] object = objects.get(index);
-  stroke(objectColor);
-  fill(objectColor);
+  if (object[4] == 1) {
+    stroke(coinObjectColor);
+    fill(coinObjectColor);
+  } else {
+    stroke(defaultObjectColor);
+    fill(defaultObjectColor);
+  } 
   rect(object[0], object[1], object[2], object[3]);
 }
 
@@ -287,6 +303,9 @@ void startGame() {
   
   // time
   timeRoundStarted = millis();
+  
+  // score
+  score = 0;
 }
 
 // This method sets the necessary variables to end the round
@@ -294,11 +313,15 @@ void gameOver() {
   gameScreen = 2;
 }
 
-/*** TIMER ***/
-
-void updateTimer() {
-  
+/*** SCORE ***/
+void drawScore() {
+  stroke(0);
+  fill(0);
+  textAlign(RIGHT, TOP);
+  text(score, width-10, 10);
 }
+
+/*** TIMER ***/
 
 void drawTimer() {
   float time = (millis()-timeRoundStarted)/1000;

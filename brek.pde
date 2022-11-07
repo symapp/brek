@@ -6,6 +6,9 @@
 // 2: GameOver Screen
 int gameScreen = 0;
 
+// timer
+float timeRoundStarted;
+
 // ball
 float ballX, ballY;
 int ballSize = 20;
@@ -84,6 +87,10 @@ void gameScreen() {
   // objects
   objectAdder();
   objectHandler();
+  
+  // timer
+  updateTimer();
+  drawTimer();
 }
 
 void gameOverScreen() {
@@ -185,15 +192,6 @@ void watchObjectCollision(int index) {
   
   int objectX = object[0];
   int objectY = object[1];
-  int objectTop = object[1] - objectHeight/2;
-  int objectBottom = object[1] + objectHeight/2;
-  int objectLeft = object[0] - objectWidth/2;
-  int objectRight = object[0] + objectWidth/2;
-  
-  float ballTop = ballY - ballSize/2;
-  float ballBottom = ballY + ballSize/2;
-  float ballLeft = ballX - ballSize/2;
-  float ballRight = ballX + ballSize/2;
   
   // ball in object
   if (
@@ -286,9 +284,42 @@ void startGame() {
 
   // objects
   objects = new ArrayList<int[]>();
+  
+  // time
+  timeRoundStarted = millis();
 }
 
 // This method sets the necessary variables to end the round
 void gameOver() {
   gameScreen = 2;
+}
+
+/*** TIMER ***/
+
+void updateTimer() {
+  
+}
+
+void drawTimer() {
+  float time = (millis()-timeRoundStarted)/1000;
+  
+  stroke(0);
+  fill(0);
+  textAlign(LEFT, TOP);
+  text(formatTime(time), 10, 10);
+}
+
+String formatTime(float timeInSecs) {
+  int minutes = floor(timeInSecs / 60);
+  float seconds = timeInSecs - minutes * 60;
+  
+  String formattedMinutes = "";
+  if (minutes < 10) formattedMinutes = "0";
+  formattedMinutes = formattedMinutes + minutes;
+  
+  String formattedSeconds = "";
+  if (seconds < 10) formattedSeconds = "0";
+  formattedSeconds = formattedSeconds + seconds;
+
+  return formattedMinutes + ":" + formattedSeconds;
 }

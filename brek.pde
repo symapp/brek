@@ -9,7 +9,7 @@ int gameScreen = 0;
 // ball
 float ballX, ballY;
 int ballSize = 20;
-int ballColor = color(0);
+int ballColor = color(100, 50, 135);
 
 // gravity
 float gravity = 0.1;
@@ -21,7 +21,7 @@ float friction = 0.1;
 
 // racket
 float racketX, racketY, pracketY;
-color racketColor = color(0);
+color racketColor = color(170, 75, 0);
 float racketWidth = 100;
 float racketHeight = 10;
 int racketBounceRate = 20;
@@ -30,10 +30,6 @@ int racketBounceRate = 20;
 
 void setup() {
     size(500, 500);
-
-    // ball
-    ballX = width/4;
-    ballY = height/5;
 }
 
 
@@ -56,7 +52,9 @@ void draw() {
 void initScreen() {
   background(0);
   fill(50);
-  rect(200, 220, 100, 50, 5);
+  rectMode(CENTER);
+  stroke(0);
+  rect(250, 245, 100, 50, 5);
   fill(255);
   textAlign(CENTER);
   text("Start", height/2, width/2);
@@ -77,7 +75,7 @@ void gameScreen() {
 }
 
 void gameOverScreen() {
-
+  background(0);
 }
 
 /*************** SCREEN OBJECTS ***************/
@@ -85,8 +83,9 @@ void gameOverScreen() {
 /*** BALL ***/
 
 void drawBall() {
-    fill(ballColor);
-    ellipse(ballX, ballY, ballSize, ballSize);
+  stroke(ballColor);
+  fill(ballColor);
+  ellipse(ballX, ballY, ballSize, ballSize);
 }
 
 void applyGravity() {
@@ -128,7 +127,7 @@ void makeBounceRight(float surface) {
 void keepInScreen() {
   // ball hits floor
   if (ballY + (ballSize/2) > height) {
-    makeBounceBottom(height);
+    gameOver();
   }
   // ball hits ceiling
   if (ballY - (ballSize/2) < 0) {
@@ -149,11 +148,12 @@ void keepInScreen() {
 /*** RACKET ***/
 
 void drawRacket() {
+  stroke(racketColor);
   fill(racketColor);
   rectMode(CENTER);
   racketY = min(500, max(400, mouseY));
   racketX = min(500 - racketWidth/2, max(0 + racketWidth/2, mouseX));
-  rect(racketX, racketY, racketWidth, racketHeight);
+  rect(racketX, racketY, racketWidth, racketHeight, 2);
 }
 
 void watchRacketBounce() {
@@ -176,11 +176,13 @@ void watchRacketBounce() {
 /*************** INPUTS ***************/
 
 public void mousePressed() {
-    // if the initial screen is active, start game on click
-    if (gameScreen == 0) {
-      if (mouseX < 200 || mouseX > 300 || mouseY < 220 || mouseY > 270) return;
-        startGame();
-    }
+  // if the initial screen is active, start game on click
+  if (gameScreen == 0) {
+    if (mouseX < 200 || mouseX > 300 || mouseY < 220 || mouseY > 270) return;
+      startGame();
+  } else if (gameScreen == 2) {
+    gameScreen = 0;
+  }
 }
 
 
@@ -188,5 +190,19 @@ public void mousePressed() {
 
 // This method sets the necessary variables to start the game
 void startGame() {
-    gameScreen = 1;
+  // gravity
+  ballSpeedVert = 0;
+  ballSpeedHorz = 0;
+  
+  // ball
+  ballX = width/4;
+  ballY = height/5;
+  
+  // screen
+  gameScreen = 1;
+}
+
+// This method sets the necessary variables to end the round
+void gameOver() {
+  gameScreen = 2;
 }

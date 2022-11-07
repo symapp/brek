@@ -40,10 +40,12 @@ int objectHeight = 15;
 int objectWidth = 50;
 color defaultObjectColor = color(0);
 color coinObjectColor = color(255, 255, 0);
-// {x, y, height, width, type}
-// types:
+
+// Objects
+// Syntax: {x, y, height, width, type}
+// Types:
 // 0 = nothing
-// 1 = yellow, coins
+// 1 = yellow (coins)
 ArrayList<int[]> objects = new ArrayList<int[]>();
 
 /*************** SETUP BLOCK ***************/
@@ -71,10 +73,12 @@ void draw() {
 
 void initScreen() {
   background(0);
+  
+  stroke(0);
   fill(50);
   rectMode(CENTER);
-  stroke(0);
   rect(250, 243, 100, 50, 5);
+  
   fill(255);
   textAlign(CENTER);
   textSize(20);
@@ -86,10 +90,10 @@ void gameScreen() {
   stroke(200);
   line(0, 400, 500, 400);
 
+  // ball & racket
   drawBall();
   drawRacket();
   watchRacketBounce();
-
   applyGravity();
   applyHorizontalSpeed();
   keepInScreen();

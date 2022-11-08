@@ -6,7 +6,7 @@
 // 0: Initial Screen
 // 1: Game Screen
 // 2: GameOver Screen
-int gameScreen = 0;
+int gameSrc = 0;
 
 // color
 int score;
@@ -55,7 +55,7 @@ ArrayList<int[]> objects = new ArrayList<int[]>();
 //-------------------------------------------
 
 void setup() {
-  size(500, 500);
+   size(screenWidth, screenHeight);
 }
 
 //------------------------------------------
@@ -63,14 +63,14 @@ void setup() {
 //------------------------------------------
 
 void draw() {
-  // Display the contents of the current screen
-  if (gameScreen == 0) {
-    initScreen();
-  } else if (gameScreen == 1) {
-    gameScreen();
-  } else if (gameScreen == 2) {
-    gameOverScreen();
-  }
+   // Display the contents of the current screen
+   if (gameSrc == 0) {
+      initScreen();
+   } else if (gameSrc == 1) {
+      gameScreen();
+   } else if (gameSrc == 2) {
+      gameOverScreen();
+   }
 }
 
 //-----------------------------------------------
@@ -78,77 +78,77 @@ void draw() {
 //-----------------------------------------------
 
 void initScreen() {
-  background(0);
-  
-  stroke(0);
-  fill(50);
-  rectMode(CENTER);
-  rect(250, 243, 100, 50, 5);
-  
-  fill(255);
-  textAlign(CENTER);
-  textSize(20);
-  text("Start", height/2, width/2);
+   background(0);
+   
+   stroke(0);
+   fill(50);
+   rectMode(CENTER);
+   rect(250, 243, 100, 50, 5);
+   
+   fill(255);
+   textAlign(CENTER);
+   textSize(20);
+   text("Start", height/2, width/2);
 }
 
 void gameScreen() {
-  background(255);
-  stroke(200);
-  line(0, 400, 500, 400);
-
-  // ball & racket
-  drawBall();
-  drawRacket();
-  watchRacketBounce();
-  applyGravity();
-  applyHorizontalSpeed();
-  keepInScreen();
-
-  // objects
-  objectAdder();
-  objectHandler();
-
-  // timer
-  drawTimer();
-
-  // score
-  drawScore();
+   background(255);
+   stroke(200);
+   line(0, 400, 500, 400);
+   
+   // ball & racket
+   drawBall();
+   drawRacket();
+   watchRacketBounce();
+   applyGravity();
+   applyHorizontalSpeed();
+   keepInScreen();
+   
+   // objects
+   objectAdder();
+   objectHandler();
+   
+   // timer
+   drawTimer();
+   
+   // score
+   drawScore();
 }
 
 void gameOverScreen() {
-  background(0);
-  textAlign(CENTER);
-
-  // score label
-  stroke(100);
-  fill(100);
-  textSize(20);
-  text("Score", width/2, height/2 - 80);
-  // score number
-  stroke(255);
-  fill(255);
-  textSize(100);
-  text(score, width/2, height/2);
-
-  // time label
-  stroke(100);
-  fill(100);
-  textSize(15);
-  text("Time played", width/2, height/2 + 50);
-  // time number
-  stroke(200);
-  fill(200);
-  textSize(35);
-  text(formatTime(timePlayed), width/2, height/2 + 85);
-
-  // PLAY AGAIN BUTTON
-  stroke(0);
-  fill(50);
-  rect(250, 400, 110, 50, 5);
-  fill(255);
-  textAlign(CENTER);
-  textSize(20);
-  text("Play Again", height/2, width/2 + 155);
+   background(0);
+   textAlign(CENTER);
+   
+   // score label
+   stroke(100);
+   fill(100);
+   textSize(20);
+   text("Score", screenWidth / 2, screenHeight / 2 - 80);
+   // score number
+   stroke(255);
+   fill(255);
+   textSize(100);
+   text(score, screenWidth / 2, screenHeight / 2);
+   
+   // time label
+   stroke(100);
+   fill(100);
+   textSize(15);
+   text("Time played", screenWidth /2, screenHeight /2 + 50);
+   // time number
+   stroke(200);
+   fill(200);
+   textSize(35);
+   text(formatTime(timePlayed), screenWidth /2, screenHeight /2 + 85);
+   
+   // PLAY AGAIN BUTTON
+   stroke(0);
+   fill(50);
+   rect(250, 400, 110, 50, 5);
+   fill(255);
+   textAlign(CENTER);
+   textSize(20);
+   text("Play Again", screenWidth /2, screenHeight /2 + 155);
 }
 
 //----------------------------------------------
@@ -160,64 +160,64 @@ void gameOverScreen() {
 //------------
 
 void drawBall() {
-  stroke(ballColor);
-  fill(ballColor);
-  ellipse(ballX, ballY, ballSize, ballSize);
+   stroke(ballColor);
+   fill(ballColor);
+   ellipse(ballX, ballY, ballSize, ballSize);
 }
 
 void applyGravity() {
-  ballSpeedVert += gravity;
-  ballY += ballSpeedVert;
-  ballSpeedVert -= (ballSpeedVert * airfriction);
+   ballSpeedVert += gravity;
+   ballY += ballSpeedVert;
+   ballSpeedVert -= (ballSpeedVert * airfriction);
 }
 
 void applyHorizontalSpeed() {
-  ballX += ballSpeedHorz;
-  ballSpeedHorz -= (ballSpeedHorz * airfriction);
+   ballX += ballSpeedHorz;
+   ballSpeedHorz -= (ballSpeedHorz * airfriction);
 }
 
 void makeBounceBottom(float surface) {
-  ballY = surface - (ballSize/2);
-  ballSpeedVert *= -1;
-  ballSpeedVert -= (ballSpeedVert * friction);
+   ballY = surface - (ballSize/2);
+   ballSpeedVert *= -1;
+   ballSpeedVert -= (ballSpeedVert * friction);
 }
 
 void makeBounceTop(float surface) {
-  ballY = surface + (ballSize/2);
-  ballSpeedVert *= 1;
-  ballSpeedVert -= (ballSpeedVert * friction);
+   ballY = surface + (ballSize/2);
+   ballSpeedVert *= 1;
+   ballSpeedVert -= (ballSpeedVert * friction);
 }
 
 void makeBounceLeft(float surface) {
-  ballX = surface + (ballSize/2);
-  ballSpeedHorz *= -1;
-  ballSpeedHorz -= (ballSpeedHorz * friction);
+   ballX = surface + (ballSize/2);
+   ballSpeedHorz *= -1;
+   ballSpeedHorz -= (ballSpeedHorz * friction);
 }
 
 void makeBounceRight(float surface) {
-  ballX = surface - (ballSize/2);
-  ballSpeedHorz *= -1;
-  ballSpeedHorz -= (ballSpeedHorz * friction);
+   ballX = surface - (ballSize/2);
+   ballSpeedHorz *= -1;
+   ballSpeedHorz -= (ballSpeedHorz * friction);
 }
 
 // keep ball in the screen
 void keepInScreen() {
-  // ball hits floor
-  if (ballY + (ballSize/2) > height) {
-    gameOver();
-  }
-  // ball hits ceiling
-  if (ballY - (ballSize/2) < 0) {
-    makeBounceTop(0);
-  }
-  // ball hits left
-  if (ballX - (ballSize/2) < 0) {
-    makeBounceLeft(0);
-  }
-  // ball hits right
-  if (ballX + (ballSize/2) > width) {
-    makeBounceRight(width);
-  }
+   // ball hits floor
+   if (ballY + (ballSize/2) > screenHeight) {
+      gameOver();
+   }
+   // ball hits ceiling
+   if (ballY - (ballSize/2) < 0) {
+      makeBounceTop(0);
+   }
+   // ball hits left
+   if (ballX - (ballSize/2) < 0) {
+      makeBounceLeft(0);
+   }
+   // ball hits right
+   if (ballX + (ballSize/2) > screenWidth) {
+      makeBounceRight(width);
+   }
 }
 
 //---------------
@@ -225,68 +225,68 @@ void keepInScreen() {
 //---------------
 
 void objectAdder() {
-  if (millis()-lastAddTime > objectInterval) {
-    int randX = round(random(0, width - objectWidth) + objectWidth/2);
-    int[] randObject = {randX, -objectHeight, objectWidth, objectHeight, round(random(0, 1))};
-    objects.add(randObject);
-    lastAddTime = millis();
-  }
+   if (millis()-lastAddTime > objectInterval) {
+      int randX = round(random(0, screenWidth - objectWidth) + objectWidth/2);
+      int[] randObject = {randX, -objectHeight, objectWidth, objectHeight, round(random(0, 1))};
+      objects.add(randObject);
+      lastAddTime = millis();
+   }
 }
 
 void objectHandler() {
-  for (int i = 0; i < objects.size(); i++) {
-    if (objectRemover(i)) {
-      return;
-    }
-
-    objectMover(i);
-    objectDrawer(i);
-    watchObjectCollision(i);
-  }
+   for (int i = 0; i < objects.size(); i++) {
+      if (objectRemover(i)) {
+         return;
+      }
+      
+      objectMover(i);
+      objectDrawer(i);
+      watchObjectCollision(i);
+   }
 }
 
 void watchObjectCollision(int index) {
-  int[] object = objects.get(index);
-
-  int objectX = object[0];
-  int objectY = object[1];
-
-  // ball in object
-  if (
-    (ballX + (ballSize/2) > objectX - objectWidth/2) &&
-    (ballX - (ballSize/2) < objectX - objectWidth/2 + objectWidth) &&
-    (ballY + (ballSize/2) > objectY - objectHeight/2) &&
-    (ballY - (ballSize/2) < objectY - objectHeight/2 + objectHeight)
-    ) {
-    if (object[4] == 1) score++;
-    objects.remove(index);
-  }
+   int[] object = objects.get(index);
+   
+   int objectX = object[0];
+   int objectY = object[1];
+   
+   // ball in object
+   if (
+   (ballX + (ballSize/2) > objectX - objectWidth/2) &&
+   (ballX - (ballSize/2) < objectX - objectWidth/2 + objectWidth) &&
+   (ballY + (ballSize/2) > objectY - objectHeight/2) &&
+   (ballY - (ballSize/2) < objectY - objectHeight/2 + objectHeight)
+   ) {
+      if (object[4] == 1) score++;
+      objects.remove(index);
+   }
 }
 
 void objectDrawer(int index) {
-  int[] object = objects.get(index);
-  if (object[4] == 1) {
-    stroke(coinObjectColor);
-    fill(coinObjectColor);
-  } else {
-    stroke(defaultObjectColor);
-    fill(defaultObjectColor);
-  }
-  rect(object[0], object[1], object[2], object[3]);
+   int[] object = objects.get(index);
+   if (object[4] == 1) {
+      stroke(coinObjectColor);
+      fill(coinObjectColor);
+   } else {
+      stroke(defaultObjectColor);
+      fill(defaultObjectColor);
+   }
+   rect(object[0], object[1], object[2], object[3]);
 }
 
 void objectMover(int index) {
-  int[] object = objects.get(index);
-  object[1] += objectSpeed;
+   int[] object = objects.get(index);
+   object[1] += objectSpeed;
 }
 
 boolean objectRemover(int index) {
-  int[] object = objects.get(index);
-  if (object[1] - object[3]  >= height) {
-    objects.remove(index);
-    return true;
-  }
-  return false;
+   int[] object = objects.get(index);
+   if (object[1] - object[3]  >= screenHeight) {
+      objects.remove(index);
+      return true;
+   }
+   return false;
 }
 
 //--------------
@@ -294,28 +294,28 @@ boolean objectRemover(int index) {
 //--------------
 
 void drawRacket() {
-  stroke(racketColor);
-  fill(racketColor);
-  rectMode(CENTER);
-  racketY = min(500, max(400, mouseY));
-  racketX = min(500 - racketWidth/2, max(0 + racketWidth/2, mouseX));
-  rect(racketX, racketY, racketWidth, racketHeight, 2);
+   stroke(racketColor);
+   fill(racketColor);
+   rectMode(CENTER);
+   racketY = min(screenHeight, max(screenHeight-100, mouseY));
+   racketX = min(screenWidth - racketWidth/2, max(0 + racketWidth/2, mouseX));
+   rect(racketX, racketY, racketWidth, racketHeight, 2);
 }
 
 void watchRacketBounce() {
-  float overhead = racketY - pracketY;
-  pracketY = racketY;
-  if ((ballX + (ballSize/2) > racketX - (racketWidth/2)) && (ballX - (ballSize/2) < racketX + (racketWidth/2))) {
-    if (dist(ballX, ballY, ballX, racketY - racketHeight/2) <= (ballSize/2) + abs(overhead)) {
-      makeBounceBottom(racketY - racketHeight/2);
-      // racket moving up
-      if (overhead < 0) {
-        ballY += overhead;
-        ballSpeedVert += overhead;
-        ballSpeedHorz = (ballX - racketX)/5;
+   float overhead = racketY - pracketY;
+   pracketY = racketY;
+   if ((ballX + (ballSize/2) > racketX - (racketWidth/2)) && (ballX - (ballSize/2) < racketX + (racketWidth/2))) {
+      if (dist(ballX, ballY, ballX, racketY - racketHeight/2) <= (ballSize/2) + abs(overhead)) {
+         makeBounceBottom(racketY - racketHeight/2);
+         // racket moving up
+         if (overhead < 0) {
+            ballY += overhead;
+            ballSpeedVert += overhead;
+            ballSpeedHorz = (ballX - racketX)/5;
+         }
       }
-    }
-  }
+   }
 }
 
 //--------------------------------------
@@ -323,14 +323,14 @@ void watchRacketBounce() {
 //--------------------------------------
 
 public void mousePressed() {
-  // if the initial screen is active, start game on click
-  if (gameScreen == 0) {
-    if (mouseX < 200 || mouseX > 300 || mouseY < 220 || mouseY > 270) return;
-    startGame();
-  } else if (gameScreen == 2) {
-    if (mouseX < 145 || mouseX > 355 || mouseY < 375 || mouseY > 425) return;
-    startGame();
-  }
+   // if the initial screen is active, start game on click
+   if (gameSrc == 0) {
+      if (mouseX < 200 || mouseX > 300 || mouseY < 220 || mouseY > 270) return;
+      startGame();
+   } else if (gameSrc == 2) {
+      if (mouseX < 145 || mouseX > 355 || mouseY < 375 || mouseY > 425) return;
+      startGame();
+   }
 }
 
 //----------------------------------------------------
@@ -339,30 +339,30 @@ public void mousePressed() {
 
 // This method sets the necessary variables to start the game
 void startGame() {
-  // gravity
-  ballSpeedVert = 0;
-  ballSpeedHorz = 0;
-
-  // ball
-  ballX = width/4;
-  ballY = height/5;
-
-  // screen
-  gameScreen = 1;
-
-  // objects
-  objects = new ArrayList<int[]>();
-
-  // time
-  timeRoundStarted = millis();
-
-  // score
-  score = 0;
+   // gravity
+   ballSpeedVert = 0;
+   ballSpeedHorz = 0;
+   
+   // ball
+   ballX = width/4;
+   ballY = height/5;
+   
+   // screen
+   gameSrc = 1;
+   
+   // objects
+   objects = new ArrayList<int[]>();
+   
+   // time
+   timeRoundStarted = millis();
+   
+   // score
+   score = 0;
 }
 
 // This method sets the necessary variables to end the round
 void gameOver() {
-  gameScreen = 2;
+   gameSrc = 2;
 }
 
 //-------------
@@ -370,10 +370,10 @@ void gameOver() {
 //-------------
 
 void drawScore() {
-  stroke(0);
-  fill(0);
-  textAlign(RIGHT, TOP);
-  text(score, width-10, 10);
+   stroke(0);
+   fill(0);
+   textAlign(RIGHT, TOP);
+   text(score, screenWidth -10, 10);
 }
 
 
@@ -382,25 +382,25 @@ void drawScore() {
 //-------------
 
 void drawTimer() {
-  timePlayed = (millis()-timeRoundStarted)/1000;
-
-  stroke(0);
-  fill(0);
-  textAlign(LEFT, TOP);
-  text(formatTime(timePlayed), 10, 10);
+   timePlayed = (millis()-timeRoundStarted)/1000;
+   
+   stroke(0);
+   fill(0);
+   textAlign(LEFT, TOP);
+   text(formatTime(timePlayed), 10, 10);
 }
 
 String formatTime(float timeInSecs) {
-  int minutes = floor(timeInSecs / 60);
-  float seconds = timeInSecs - minutes * 60;
-
-  String formattedMinutes = "";
-  if (minutes < 10) formattedMinutes = "0";
-  formattedMinutes = formattedMinutes + minutes;
-
-  String formattedSeconds = "";
-  if (seconds < 10) formattedSeconds = "0";
-  formattedSeconds = formattedSeconds + seconds;
-
-  return formattedMinutes + ":" + formattedSeconds;
+   int minutes = floor(timeInSecs / 60);
+   float seconds = timeInSecs - minutes * 60;
+   
+   String formattedMinutes = "";
+   if (minutes < 10) formattedMinutes = "0";
+   formattedMinutes = formattedMinutes + minutes;
+   
+   String formattedSeconds = "";
+   if (seconds < 10) formattedSeconds = "0";
+   formattedSeconds = formattedSeconds + seconds;
+   
+   return formattedMinutes + ":" + formattedSeconds;
 }

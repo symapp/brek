@@ -1,4 +1,6 @@
-/*************** VARIABLES ***************/
+//-----------------------------------------
+//--------------- VARIABLES ---------------
+//-----------------------------------------
 
 // GameScreen:
 // 0: Initial Screen
@@ -48,14 +50,17 @@ color coinObjectColor = color(255, 255, 0);
 // 1 = yellow (coins)
 ArrayList<int[]> objects = new ArrayList<int[]>();
 
-/*************** SETUP BLOCK ***************/
+//-------------------------------------------
+//--------------- SETUP BLOCK ---------------
+//-------------------------------------------
 
 void setup() {
   size(500, 500);
 }
 
-
-/*************** DRAW BLOCK ***************/
+//------------------------------------------
+//--------------- DRAW BLOCK ---------------
+//------------------------------------------
 
 void draw() {
   // Display the contents of the current screen
@@ -68,8 +73,9 @@ void draw() {
   }
 }
 
-
-/*************** SCREEN CONTENTS ***************/
+//-----------------------------------------------
+//--------------- SCREEN CONTENTS ---------------
+//-----------------------------------------------
 
 void initScreen() {
   background(0);
@@ -145,9 +151,13 @@ void gameOverScreen() {
   text("Play Again", height/2, width/2 + 155);
 }
 
-/*************** SCREEN OBJECTS ***************/
+//----------------------------------------------
+//--------------- SCREEN OBJECTS ---------------
+//----------------------------------------------
 
-/*** BALL ***/
+//------------
+//--- BALL ---
+//------------
 
 void drawBall() {
   stroke(ballColor);
@@ -210,8 +220,9 @@ void keepInScreen() {
   }
 }
 
-
-/*** OBJECTS ***/
+//---------------
+//--- OBJECTS ---
+//---------------
 
 void objectAdder() {
   if (millis()-lastAddTime > objectInterval) {
@@ -278,8 +289,9 @@ boolean objectRemover(int index) {
   return false;
 }
 
-
-/*** RACKET ***/
+//--------------
+//--- RACKET ---
+//--------------
 
 void drawRacket() {
   stroke(racketColor);
@@ -306,8 +318,9 @@ void watchRacketBounce() {
   }
 }
 
-
-/*************** INPUTS ***************/
+//--------------------------------------
+//--------------- INPUTS ---------------
+//--------------------------------------
 
 public void mousePressed() {
   // if the initial screen is active, start game on click
@@ -320,8 +333,9 @@ public void mousePressed() {
   }
 }
 
-
-/*************** OTHER FUNCTIONS ***************/
+//----------------------------------------------------
+//--------------- OTHER FUNCTIONS --------------------
+//----------------------------------------------------
 
 // This method sets the necessary variables to start the game
 void startGame() {
@@ -351,7 +365,10 @@ void gameOver() {
   gameScreen = 2;
 }
 
-/*** SCORE ***/
+//-------------
+//--- SCORE ---
+//-------------
+
 void drawScore() {
   stroke(0);
   fill(0);
@@ -359,7 +376,10 @@ void drawScore() {
   text(score, width-10, 10);
 }
 
-/*** TIMER ***/
+
+//-------------
+//--- TIMER ---
+//-------------
 
 void drawTimer() {
   timePlayed = (millis()-timeRoundStarted)/1000;

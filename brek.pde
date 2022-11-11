@@ -36,7 +36,8 @@ int racketBounceRate = 20;
 
 // objects
 int objectSpeed = 1;
-int objectInterval = 5000;
+int originalObjectInterval = 5000;
+int maxObjectIntervalOffset = 4000;
 float lastAddTime = 0;
 int objectHeight = 15;
 int objectWidth = 50;
@@ -225,6 +226,7 @@ void keepInScreen() {
 //---------------
 
 void objectAdder() {
+  int objectInterval = originalObjectInterval + int(random(-maxObjectIntervalOffset, maxObjectIntervalOffset));
   if (millis()-lastAddTime > objectInterval) {
     int randX = round(random(0, width - objectWidth) + objectWidth/2);
     int[] randObject = {randX, -objectHeight, objectWidth, objectHeight, round(random(0, 1))};

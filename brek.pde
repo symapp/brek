@@ -1,39 +1,11 @@
-//-----------------------------------------
-//--------------- VARIABLES ---------------
-//-----------------------------------------
 
-// GameState:
-// 0: Initial Screen
-// 1: Game Screen
-// 2: GameOver Screen
-int gameState = 0;
+// custom instances
+Racket racket;
+Ball ball;
+GameState gameState = GameState.START;
 
-// color
+// score
 int score;
-
-// timer
-float timeRoundStarted;
-float timePlayed;
-
-// ball
-float ballX, ballY;
-int ballSize = 20;
-int ballColor = color(235, 186, 185);
-
-// gravity
-float gravity = 0.1;
-float ballSpeedVert = 0;
-float ballSpeedHorz = 0;
-float airfriction = 0.0001;
-float friction = 0.1;
-
-// racket
-float racketX, racketY, pracketY;
-color racketColor = color(105, 137, 150);
-float racketWidth = 100;
-float racketHeight = 10;
-int racketBounceRate = 20;
-int racketZoneHeight = 100;
 
 // objects
 int objectSpeed = 1;
@@ -42,15 +14,11 @@ int maxObjectIntervalOffset = 4000;
 float lastAddTime = 0;
 int objectHeight = 15;
 int objectWidth = 50;
-color defaultObjectColor = color(200, 200, 200);
-color coinObjectColor = color(225, 181, 48);
+ArrayList<Object> objects = new ArrayList<>();
 
-// Objects
-// Syntax: {x, y, height, width, type}
-// Types:
-// 0 = nothing
-// 1 = yellow (coins)
-ArrayList<int[]> objects = new ArrayList<int[]>();
+// timer
+float timeRoundStarted;
+float timePlayed;
 
 // Buttons
 int buttonHeight = 50;
@@ -58,10 +26,6 @@ int buttonWidth = 100;
 
 // Display
 int displayHeight, displayWidth;
-
-//-------------------------------------------
-//--------------- SETUP BLOCK ---------------
-//-------------------------------------------
 
 void setup() {
   // FOR IOS
@@ -77,26 +41,27 @@ void setup() {
   displayWidth = 500;
   displayHeight = 500;
   // comment end
+  
+  racket = new Racket(mouseX, mouseY, 100, 10, 20, 100);
+  ball = new Ball(displayWidth/4, displayHeight/5);
 }
-
-//------------------------------------------
-//--------------- DRAW BLOCK ---------------
-//------------------------------------------
 
 void draw() {
-  // Display the contents of the current screen
-  if (gameState == 0) {
-    initScreen();
-  } else if (gameState == 1) {
-    gameScreen();
-  } else if (gameState == 2) {
-    gameOverScreen();
+  background(255);
+  
+  switch(gameState) {
+    case START:
+      initScreen();
+      break;
+    case GAME:
+      gameScreen();
+      break;
+    case GAMEOVER:
+      gameOverScreen();
+      break;
   }
+  
 }
-
-//-----------------------------------------------
-//--------------- SCREEN CONTENTS ---------------
-//-----------------------------------------------
 
 void initScreen() {
   background(0);
@@ -115,15 +80,10 @@ void initScreen() {
 void gameScreen() {
   background(255);
   stroke(200);
-  line(0, displayHeight - racketZoneHeight, displayWidth, displayHeight-100);
 
   // ball & racket
-  drawBall();
-  drawRacket();
-  watchRacketBounce();
-  applyGravity();
-  applyHorizontalSpeed();
-  keepInScreen();
+   racket.update();
+  ball.update();
 
   // objects
   objectAdder();
@@ -172,185 +132,17 @@ void gameOverScreen() {
   text("Play Again", displayWidth /2, displayHeight /2 + 155);
 }
 
-//----------------------------------------------
-//--------------- SCREEN OBJECTS ---------------
-//----------------------------------------------
-
-//------------
-//--- BALL ---
-//------------
-
-void drawBall() {
-  stroke(ballColor);
-  fill(ballColor);
-  ellipse(ballX, ballY, ballSize, ballSize);
-}
-
-void applyGravity() {
-  ballSpeedVert += gravity;
-  ballY += ballSpeedVert;
-  ballSpeedVert -= (ballSpeedVert * airfriction);
-}
-
-void applyHorizontalSpeed() {
-  ballX += ballSpeedHorz;
-  ballSpeedHorz -= (ballSpeedHorz * airfriction);
-}
-
-void makeBounceBottom(float surface) {
-  ballY = surface - (ballSize/2);
-  ballSpeedVert *= -1;
-  ballSpeedVert -= (ballSpeedVert * friction);
-}
-
-void makeBounceTop(float surface) {
-  ballY = surface + (ballSize/2);
-  ballSpeedVert *= 1;
-  ballSpeedVert -= (ballSpeedVert * friction);
-}
-
-void makeBounceLeft(float surface) {
-  ballX = surface + (ballSize/2);
-  ballSpeedHorz *= -1;
-  ballSpeedHorz -= (ballSpeedHorz * friction);
-}
-
-void makeBounceRight(float surface) {
-  ballX = surface - (ballSize/2);
-  ballSpeedHorz *= -1;
-  ballSpeedHorz -= (ballSpeedHorz * friction);
-}
-
-// keep ball in the screen
-void keepInScreen() {
-  // ball hits floor
-  if (ballY + (ballSize/2) > displayHeight) {
-    gameOver();
-  }
-  // ball hits ceiling
-  if (ballY - (ballSize/2) < 0) {
-    makeBounceTop(0);
-  }
-  // ball hits left
-  if (ballX - (ballSize/2) < 0) {
-    makeBounceLeft(0);
-  }
-  // ball hits right
-  if (ballX + (ballSize/2) > displayWidth) {
-    makeBounceRight(width);
-  }
-}
-
-//---------------
-//--- OBJECTS ---
-//---------------
-
-void objectAdder() {
-  int objectInterval = originalObjectInterval + int(random(-maxObjectIntervalOffset, maxObjectIntervalOffset));
-  if (millis()-lastAddTime > objectInterval) {
-    int randX = round(random(0, displayWidth - objectWidth) + objectWidth/2);
-    int[] randObject = {randX, -objectHeight, objectWidth, objectHeight, round(random(0, 1))};
-    objects.add(randObject);
-    lastAddTime = millis();
-  }
-}
-
-void objectHandler() {
-  for (int i = 0; i < objects.size(); i++) {
-    if (objectRemover(i)) {
-      return;
-    }
-
-    objectMover(i);
-    objectDrawer(i);
-    watchObjectCollision(i);
-  }
-}
-
-void watchObjectCollision(int index) {
-  int[] object = objects.get(index);
-
-  int objectX = object[0];
-  int objectY = object[1];
-
-  // ball in object
-  if (
-    (ballX + (ballSize/2) > objectX - objectWidth/2) &&
-    (ballX - (ballSize/2) < objectX - objectWidth/2 + objectWidth) &&
-    (ballY + (ballSize/2) > objectY - objectHeight/2) &&
-    (ballY - (ballSize/2) < objectY - objectHeight/2 + objectHeight)
-    ) {
-    if (object[4] == 1) score++;
-    objects.remove(index);
-  }
-}
-
-void objectDrawer(int index) {
-  int[] object = objects.get(index);
-  if (object[4] == 1) {
-    stroke(coinObjectColor);
-    fill(coinObjectColor);
-  } else {
-    stroke(defaultObjectColor);
-    fill(defaultObjectColor);
-  }
-  rect(object[0], object[1], object[2], object[3]);
-}
-
-void objectMover(int index) {
-  int[] object = objects.get(index);
-  object[1] += objectSpeed;
-}
-
-boolean objectRemover(int index) {
-  int[] object = objects.get(index);
-  if (object[1] - object[3]  >= displayHeight) {
-    objects.remove(index);
-    return true;
-  }
-  return false;
-}
-
-//--------------
-//--- RACKET ---
-//--------------
-
-void drawRacket() {
-  stroke(racketColor);
-  fill(racketColor);
-  rectMode(CENTER);
-  racketY = min(displayHeight, max(displayHeight-100, mouseY));
-  racketX = min(displayWidth - racketWidth/2, max(0 + racketWidth/2, mouseX));
-  rect(racketX, racketY, racketWidth, racketHeight, 2);
-}
-
-void watchRacketBounce() {
-  float overhead = racketY - pracketY;
-  pracketY = racketY;
-  if ((ballX + (ballSize/2) > racketX - (racketWidth/2)) && (ballX - (ballSize/2) < racketX + (racketWidth/2))) {
-    if (dist(ballX, ballY, ballX, racketY - racketHeight/2) <= (ballSize/2) + abs(overhead)) {
-      makeBounceBottom(racketY - racketHeight/2);
-      // racket moving up
-      if (overhead < 0) {
-        ballY += overhead;
-        ballSpeedVert += overhead;
-        ballSpeedHorz = (ballX - racketX)/5;
-      }
-    }
-  }
-}
-
 //--------------------------------------
 //--------------- INPUTS ---------------
 //--------------------------------------
 
 public void mousePressed() {
   // if the initial screen is active, start game on click
-  if (gameState == 0) {
+  if (gameState == GameState.START) {
     if (mouseX < displayWidth/2 - buttonWidth/2 || mouseX > displayWidth/2 + buttonWidth/2 ||
       mouseY < displayHeight/2 - buttonHeight/2 || mouseY > displayHeight/2 + buttonHeight/2) return;
     startGame();
-  } else if (gameState == 2) {
+  } else if (gameState == GameState.GAMEOVER) {
     if (mouseX < displayWidth/2 - (buttonWidth+10)/2 || mouseX > displayWidth/2 + (buttonWidth+10)/2 ||
       mouseY < displayHeight/2 + 150 - buttonHeight/2 || mouseY > displayHeight/2 + 150 + buttonHeight/2) return;
     startGame();
@@ -361,21 +153,22 @@ public void mousePressed() {
 //--------------- OTHER FUNCTIONS --------------------
 //----------------------------------------------------
 
+
 // This method sets the necessary variables to start the game
 void startGame() {
   // gravity
-  ballSpeedVert = 0;
-  ballSpeedHorz = 0;
+  ball.speedY = 0;
+  ball.speedX = 0;
 
   // ball
-  ballX = displayWidth/4;
-  ballY = displayHeight/5;
+  ball.x = displayWidth/4;
+  ball.y = displayHeight/5;
 
   // screen
-  gameState = 1;
+  gameState = GameState.GAME;
 
   // objects
-  objects = new ArrayList<int[]>();
+  objects = new ArrayList<Object>();
 
   // time
   timeRoundStarted = millis();
@@ -386,8 +179,9 @@ void startGame() {
 
 // This method sets the necessary variables to end the round
 void gameOver() {
-  gameState = 2;
+  gameState = GameState.GAMEOVER;
 }
+
 
 //-------------
 //--- SCORE ---
@@ -429,3 +223,235 @@ String formatTime(float timeInSecs) {
 
   return formattedMinutes + ":" + formattedSeconds;
 }
+
+//---------------
+//--- OBJECTS ---
+//---------------
+
+void objectAdder() {
+  int objectInterval = originalObjectInterval + int(random(-maxObjectIntervalOffset, maxObjectIntervalOffset));
+  if (millis()-lastAddTime > objectInterval) {
+    int randX = round(random(0, displayWidth - objectWidth) + objectWidth/2);
+    ObjectType t = ObjectType.NOTHING;
+    if (random(0, 1) > 0.5) t = ObjectType.COIN;
+    Object randObject = new Object(randX, -objectHeight, objectWidth, objectHeight, t);
+    objects.add(randObject);
+    lastAddTime = millis();
+  }
+}
+
+void objectHandler() {
+  for (int i = 0; i < objects.size(); i++) {
+    if (objectRemover(i)) {
+      return;
+    }
+
+    objects.get(i).update();
+    watchObjectCollision(i);
+  }
+}
+
+void watchObjectCollision(int index) {
+  Object object = objects.get(index);
+
+  // ball in object
+  if (
+    (ball.x + (ball.size/2) > object.x - objectWidth/2) &&
+    (ball.x - (ball.size/2) < object.x - objectWidth/2 + objectWidth) &&
+    (ball.y + (ball.size/2) > object.y - objectHeight/2) &&
+    (ball.y - (ball.size/2) < object.y - objectHeight/2 + objectHeight)
+    ) {
+    if (object.t == ObjectType.COIN) score++;
+    objects.remove(index);
+  }
+}
+
+boolean objectRemover(int index) {
+  Object object = objects.get(index);
+  if (object.y - object.h  >= displayHeight) {
+    objects.remove(index);
+    return true;
+  }
+  return false;
+}
+
+// --------------- CLASSES ---------------
+
+class Racket {
+  float x, y, pY, w, h, bounceRate, zoneSize;
+  color c = color(105, 137, 150);
+
+  Racket (float x, float y, float w, float h,
+    float bounceRate, float zoneSize) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.bounceRate = bounceRate;
+    this.zoneSize = zoneSize;
+  };
+
+  void update() {
+    x = min(displayWidth - w/2, max(0 + w/2, mouseX));
+    y = min(displayHeight - h/2, max(displayHeight-zoneSize + h/2, mouseY));
+    this.draw();
+    makeBallBounce();
+  };
+
+  void draw() {
+    stroke(200);
+    line(0, displayHeight - zoneSize, displayWidth, displayHeight-100);
+
+    stroke(c);
+    fill(c);
+    rectMode(CENTER);
+    rect(x, y, w, h, 2);
+  };
+
+  void makeBallBounce() {
+    float overhead = y - pY;
+    pY = y;
+
+    if ((ball.x + (ball.size/2) > x - (w/2)) && (ball.x - (ball.size/2) < x + (w/2))) {
+      if (dist(ball.x, ball.y, ball.x, y - h/2) <= (ball.size/2) + abs(overhead)) {
+        ball.makeBounceBottom(y - h/2);
+        // racket moving up
+        if (overhead < 0) {
+          ball.y += overhead;
+          ball.speedY += overhead;
+          ball.speedX = (ball.x - x)/5;
+        }
+      }
+    }
+  };
+};
+
+class Ball {
+  float x, y, speedY, speedX;
+  int size = 20;
+  float gravity = 0.1;
+  float airfriction = 0.0001;
+  float friction = 0.1;
+  color c = color(235, 186, 185);
+
+  Ball (float x, float y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  void update() {
+    applyGravity();
+    applyHorizontalSpeed();
+    keepInScreen();
+    this.draw();
+  };
+
+  void draw() {
+    stroke(c);
+    fill(c);
+    ellipse(x, y, size, size);
+  };
+
+  void applyGravity() {
+    speedY += gravity;
+    y += speedY;
+    speedY -= speedY * airfriction;
+  };
+
+  void applyHorizontalSpeed() {
+    x += speedX;
+    speedX -= speedX * airfriction;
+  };
+
+  // bounce
+  void makeBounceBottom(float surface) {
+    y = surface - (size/2);
+    speedY *= -1;
+    speedY -= speedY * friction;
+  };
+  void makeBounceTop(float surface) {
+    y = surface + (size/2);
+    speedY *= -0.5;
+    speedY -= speedY * friction;
+  };
+  void makeBounceLeft(float surface) {
+    x = surface + (size/2);
+    speedX *= -1;
+    speedX -= speedX * friction;
+  };
+  void makeBounceRight(float surface) {
+    x = surface - (size/2);
+    speedX *= -1;
+    speedX -= speedX * friction;
+  };
+
+  // keep ball in screen
+  void keepInScreen() {
+    // ball hits floor
+    if (y + (size/2) > displayHeight) {
+      gameOver();
+    }
+    // ball hits ceiling
+    if (y - (size/2) < 0) {
+      makeBounceTop(0);
+    }
+    // ball hits left
+    if (x - (size/2) < 0) {
+      makeBounceLeft(0);
+    }
+    // ball hits right
+    if (x + (size/2) > displayWidth) {
+      makeBounceRight(displayWidth);
+    }
+  }
+};
+
+class Object {
+  float x, y, w, h;
+  ObjectType t;
+  color c;
+  
+  Object (float x, float y, float w, float h, ObjectType t) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.t = t;
+  };
+  
+  void update() {
+    y += objectSpeed;
+    
+    this.draw();
+  };
+  
+  
+  void draw(){
+    color c = color(t.r, t.g, t.b);
+    stroke(c);
+    fill(c);
+    rect(x, y, w, h, 1);
+  };
+}
+
+enum ObjectType {
+  NOTHING(200, 200, 200),
+  COIN(225, 181, 38);
+  
+  
+  int r;
+  int g;
+  int b;
+  
+  ObjectType(int r, int g, int b) {
+    this.r = r;
+    this.g = g;
+    this.b = b;
+  };
+};
+
+enum GameState {
+  START,
+  GAME,
+  GAMEOVER
+};

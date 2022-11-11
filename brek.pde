@@ -18,7 +18,7 @@ float timePlayed;
 // ball
 float ballX, ballY;
 int ballSize = 20;
-int ballColor = color(100, 50, 135);
+int ballColor = color(235, 186, 185);
 
 // gravity
 float gravity = 0.1;
@@ -29,7 +29,7 @@ float friction = 0.1;
 
 // racket
 float racketX, racketY, pracketY;
-color racketColor = color(170, 75, 0);
+color racketColor = color(105, 137, 150);
 float racketWidth = 100;
 float racketHeight = 10;
 int racketBounceRate = 20;
@@ -40,8 +40,8 @@ int objectInterval = 5000;
 float lastAddTime = 0;
 int objectHeight = 15;
 int objectWidth = 50;
-color defaultObjectColor = color(0);
-color coinObjectColor = color(255, 255, 0);
+color defaultObjectColor = color(200, 200, 200);
+color coinObjectColor = color(225, 181, 48);
 
 // Objects
 // Syntax: {x, y, height, width, type}

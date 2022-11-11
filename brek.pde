@@ -416,7 +416,8 @@ void drawTimer() {
 
 String formatTime(float timeInSecs) {
   int minutes = floor(timeInSecs / 60);
-  float seconds = timeInSecs - minutes * 60;
+  float seconds = round((timeInSecs - minutes * 60)*1000);
+  seconds /= 1000;
 
   String formattedMinutes = "";
   if (minutes < 10) formattedMinutes = "0";
